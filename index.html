@@ -1,56 +1,158 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
 	<meta charset="UTF-8">
 	<title>Yo, You Never Knew You Needed So Many GIFs From 90s TV Shows</title>
-		<!-- link to reset stylesheet -->
+<!-- link to reset stylesheet -->
 	<link rel="stylesheet" type="text/css" href="assets/css/reset.css">
-	<!-- link to skeleton -->
-	
-	<!-- link to stylesheet -->
-	<link rel="stylesheet" type="text/css" href="assets/css/1.css">
-	<!-- link to google fonts -->
-	<link href="https://fonts.googleapis.com/css?family=Bungee|Fredoka+One|Open+Sans" rel="stylesheet">
+<!-- link to skeleton -->
+
+<!-- link to stylesheet -->
+	<link rel="stylesheet" type="text/css" href="assets/css/style1.css">
+<!-- link to google fonts -->
+	<link href="https://fonts.googleapis.com/css?family=Josefin+Sans|Wendy+One" rel="stylesheet">
+
+	<style type="text/css">
+	</style>
 </head>
+
 <body>
-<div class="container">
-	<h1>yo, you never knew you needed so many gifs from 70s tv shows</h1>
+	<div class="container">
+		<h1 class="text-center">Awsome Pets GIFY</h1>
+		<br>
+		<br>
+		<div class="row">
+			<div class="col-md-12">
+				<div id="buttons-view" class="text-center"></div>
+			</div>
+		</div>
+		<div class="row">
+			<div class="col-md-12">
+				<div id="pets-view"></div>
+			</div>
+		</div>
 
+		<div class="row">
+			<div class="col-md-12 text-center">
+				<form id="pet-form">
+					<input type="text" id="pet-input" placeholder="Add Pet" class="text-center">
+					<input id="add-pet" type="submit" value="Add Pet" class="btn-submit">
+				</form>
+			</div>
+		</div>
 	</div>
-	<br><br>
-	<div id="form">
-		<form id="show-form">
-			<label for="show-input">Add another show, dude:</label>
-			<input type="text" id="show-input">
-
-			<input id="addShow" type="submit" value="DO IT">
-		</form>
-		<br><br>
-	</div>
-	<div id="gifsView">
-	</div>
-
-</div>
 
 
-
-
-<div id="top">
-</div>
-<div id="bottom">
-</div>
-<div id="left">
-</div>
-<div id="right">
-</div>
-
-
-<!-- link to jQuery -->
-<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.1.1/jquery.min.js"></script>
-<!-- link to materialize -->
-<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
 <!-- link to javascrip file -->
-<script type="text/javascript" src="assets/js/app.js"></script>
+	<script type="text/javascript" src="assets/js/app.js"></script>
+<!-- link to materialize -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/materialize/0.97.8/js/materialize.min.js"></script>
+<!-- link to jQuery -->
+	<script src="https://cdnjs.cloudflare.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+	<script type="text/javascript">
+
+//// Array of pets
+var pets = ["dog", "cat", "bird", "reptile"];
+//// displaypetInfo function re-renders the HTML to display the appropriate content
+            function displaypetInfo() {
+                var apikey="xcDxm0G6TTmYIwdkNVf9pTNRqFYAj9E4";
+                var pet = $(this).attr("data-name");
+                var queryURL = "https://api.giphy.com/v1/gifs/search?api_key=" + apikey + "&q="+pet+"&limit=10&offset=0&rating=G&lang=en";
+//// Creates AJAX call for the specific pet button being clicked
+				$.ajax({
+                    url: queryURL,
+                    method: "GET"
+                }).then(function(response) {
+                   
+                    console.log(response.data);
+                    var resp=response.data;
+                    $("#pets-view").empty();
+                    $("#pets-view").append('<h2>' + pet.toUpperCase() + 'S GIFS</h2>');
+					$("#pets-view").append('<hr>');
+					
+					for(var i=0;i<resp.length;i++){
+                   var divI=$("<div>");
+                   divI.addClass("divImagen");
+                                     
+                   divI.append('<p>'+[i+1]+'.-Rating: '+ resp[i].rating +'</p>');
+                  
+                    
+                    var urlImagen = resp[i].images.fixed_height_still.url;
+                    var imagen = $("<img>").attr("src", urlImagen);
+                    imagen.addClass("animation");
+                    //url Still
+                    var URLStill= resp[i].images.fixed_height_still.url;
+                    imagen.attr('data-still',URLStill);
+                    
+                    // url animate
+                    var URLAnimate= resp[i].images.fixed_height.url;
+                    imagen.attr('data-animate', URLAnimate);
+                     imagen.attr('data-state', 'still');
+                    divI.append(imagen);
+                    $("#pets-view").append(divI);
+                		}
+                    
+                    });
+			}
+			
+////Function handles events where change the status of the imagen
+            
+			 function ImagenClick() {
+        
+		var state = $(this).attr("data-state");
+		if (state === "still") {
+			$(this).attr("src", $(this).attr("data-animate"));
+			$(this).attr("data-state", "animate");
+		} 
+		else {
+			$(this).attr("src", $(this).attr("data-still"));
+			$(this).attr("data-state", "still");
+			}
+	   }
+//// Function for displaying pet data
+		function renderButtons() {
+			$("#buttons-view").empty();
+			
+			for (var i = 0; i < pets.length; i++) {
+				 var a = $("<button>");
+				 a.addClass("pet");
+				 a.attr("data-name", pets[i]);
+				 var sp=$("<span>");
+				 sp.addClass("glyphicon glyphicon-piggy-bank");
+				 a.append(sp);
+				 var spT=$("<span>");
+				 spT.text(pets[i].toUpperCase());
+				 a.append(spT);
+				$("#buttons-view").append(a);
+			}
+		}
+		// This function handles events where the add pet button is clicked
+		$("#add-pet").on("click", function(event) {
+			event.preventDefault();
+			
+			var pet = $("#pet-input").val().trim();
+		   if(pets.indexOf(pet.toLowerCase())>=0 || pet=="")
+		   {
+			alert("Please, enter correct name to search or look at your buttons already added");
+			
+		   }
+		else{
+			pets.push(pet.toLowerCase());
+			$("#pet-input").val("");
+			}
+		   renderButtons();
+		});
+		// Adding click event listeners to all elements with a class of "pet"
+		 $(document).on("click", ".pet", displaypetInfo);
+		 $(document).on("click", ".animation", ImagenClick);
+		// Calling the renderButtons function to display the intial buttons
+		renderButtons();
+
+	</script>
+	
+	
+	
 </body>
+
 </html>
-© 2018 GitHub, Inc.
